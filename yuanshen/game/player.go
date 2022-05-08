@@ -1,6 +1,9 @@
 package game
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 const (
 	TASK_STATE_INIT   = 0
@@ -41,6 +44,8 @@ func NewTestPlayer() *Player {
 	player.ModIcon = &ModIcon{}
 	player.ModCard = &ModCard{}
 	player.ModUniqueTask = &ModUniqueTask{}
+	player.ModUniqueTask.MyTaskInfo = make(map[int]*TaskInfo)
+	player.ModUniqueTask.Locker = &sync.RWMutex{}
 
 	player.ModPlayer.PlayerLevel = 1
 	return player
