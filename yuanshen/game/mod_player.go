@@ -3,22 +3,24 @@ package game
 import (
 	"fmt"
 	"log"
+	"time"
 	"yuanshen/csvs"
 )
 
 type ModPlayer struct {
-	UserId        int
-	Icon          int
-	Card          int
-	Name          string
-	Sign          string
-	PlayerLevel   int
-	PlayerExp     int
-	WordLevel     int
-	WordLevelCool int64
-	Birth         int
-	ShowTeam      []int
-	ShowCard      []int
+	UserId         int
+	Icon           int
+	Card           int
+	Name           string
+	Sign           string
+	PlayerLevel    int
+	PlayerExp      int
+	WorldLevel     int
+	WorldLevelNow  int
+	WorldLevelCool int64
+	Birth          int
+	ShowTeam       []int
+	ShowCard       []int
 
 	//看不见的
 	IsProhibit int
@@ -85,4 +87,89 @@ func (m *ModPlayer) AddExp(exp int, player *Player) {
 		m.PlayerExp -= config.PlayerExp
 	}
 	fmt.Println("现在等级:", m.PlayerLevel, ",现在经验:", m.PlayerExp)
+}
+
+func (m *ModPlayer) ReduceWorldLevel() {
+	if m.WorldLevel < csvs.REDUCE_WORLD_LEVEL_START {
+		fmt.Println("操作失败:, ---当前世界等级：", m.WorldLevel)
+		return
+	}
+
+	if m.WorldLevel-m.WorldLevelNow >= csvs.REDUCE_WORLD_LEVEL_MAX {
+		fmt.Println("操作失败:, ---当前世界等级：", m.WorldLevel, "---真实世界等级：", m.WorldLevelNow)
+		return
+	}
+
+	if time.Now().Unix() < m.WorldLevelCool {
+		fmt.Println("操作失败:, ---冷却中")
+		return
+	}
+
+	m.WorldLevelNow -= 1
+	m.WorldLevelCool = time.Now().Unix() + csvs.REDUCE_WORLD_LEVEL_COOL_TIME
+	fmt.Println("操作成功:, ---当前世界等级：", m.WorldLevel, "---真实世界等级：", m.WorldLevelNow)
+}
+
+func (m *ModPlayer) ReturnWorldLevel() {
+	if m.WorldLevelNow == m.WorldLevel {
+		fmt.Println("操作失败:, ---当前世界等级：", m.WorldLevel, "---真实世界等级：", m.WorldLevelNow)
+		return
+	}
+
+	if time.Now().Unix() < m.WorldLevelCool {
+		fmt.Println("操作失败:, ---冷却中")
+		return
+	}
+
+	m.WorldLevelNow += 1
+	m.WorldLevelCool = time.Now().Unix() + csvs.REDUCE_WORLD_LEVEL_COOL_TIME
+	fmt.Println("操作成功:, ---当前世界等级：", m.WorldLevel, "---真实世界等级：", m.WorldLevelNow)
+}
+
+func (m *ModPlayer) SetBirth(birth int) {
+	if m.Birth > 0 {
+		fmt.Println("已设置过生日!")
+		return
+	}
+	month := birth / 100
+	day := birth % 100
+
+	switch month {
+	case 1, 3, 5, 7, 8, 10, 12:
+		if day <= 0 || day > 31 {
+			fmt.Println(month, "月没有", day, "日！")
+			return
+		}
+	case 4, 6, 9, 11:
+		if day <= 0 || day > 30 {
+			fmt.Println(month, "月没有", day, "日！")
+			return
+		}
+	case 2:
+		if day <= 0 || day > 29 {
+			fmt.Println(month, "月没有", day, "日！")
+			return
+		}
+	default:
+		fmt.Println("没有", month, "月！")
+		return
+	}
+	m.Birth = birth
+	fmt.Println("设置成功，生日为:", month, "月", day, "日")
+
+	if m.IsBirthDay() {
+		fmt.Println("今天是你的生日，生日快乐！")
+	} else {
+		fmt.Println("期待你生日的到来!")
+	}
+
+}
+
+func (m *ModPlayer) IsBirthDay() bool {
+	month := time.Now().Month()
+	day := time.Now().Day()
+	if m.Birth/100 == int(month) && m.Birth%100 == day {
+		return true
+	}
+	return false
 }
