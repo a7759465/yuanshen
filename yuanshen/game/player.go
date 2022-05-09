@@ -48,6 +48,14 @@ func (p *Player) ReturnWorldLevel(sign string) {
 	fmt.Println("当前签名:", p.ModPlayer.Sign)
 }
 
+func (p *Player) SetBirth(birth int) {
+	p.ModPlayer.SetBirth(birth)
+}
+
+func (p *Player) SetShowCard(showCard []int) {
+	p.ModPlayer.SetShowCard(showCard, p)
+}
+
 func NewTestPlayer() *Player {
 	player := &Player{}
 	player.ModPlayer = &ModPlayer{}

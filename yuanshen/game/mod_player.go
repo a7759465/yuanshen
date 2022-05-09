@@ -173,3 +173,25 @@ func (m *ModPlayer) IsBirthDay() bool {
 	}
 	return false
 }
+
+func (m *ModPlayer) SetShowCard(showCard []int, player *Player) {
+	if len(showCard) > csvs.SHOW_SIZE {
+		return
+	}
+
+	cardExist := make(map[int]int)
+	newList := make([]int, 0)
+	for _, cardId := range showCard {
+		_, ok := cardExist[cardId]
+		if ok {
+			continue
+		}
+		if !player.ModCard.IsHasCard(cardId) {
+			continue
+		}
+		newList = append(newList, cardId)
+		cardExist[cardId] = 1
+	}
+	m.ShowCard = newList
+	fmt.Println("卡池:", m.ShowCard)
+}
