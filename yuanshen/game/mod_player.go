@@ -7,6 +7,11 @@ import (
 	"yuanshen/csvs"
 )
 
+type ShowRole struct {
+	RoleId    int
+	RoleLevel int
+}
+
 type ModPlayer struct {
 	UserId         int
 	Icon           int
@@ -19,7 +24,8 @@ type ModPlayer struct {
 	WorldLevelNow  int
 	WorldLevelCool int64
 	Birth          int
-	ShowTeam       []int
+	ShowTeam       []*ShowRole
+	HideShowTeam   int //展示隐藏的开关
 	ShowCard       []int
 
 	//看不见的
@@ -172,4 +178,57 @@ func (m *ModPlayer) IsBirthDay() bool {
 		return true
 	}
 	return false
+}
+
+func (m *ModPlayer) SetShowCard(showCard []int, player *Player) {
+	if len(showCard) > csvs.SHOW_SIZE {
+		return
+	}
+
+	cardExist := make(map[int]int)
+	newList := make([]int, 0)
+	for _, cardId := range showCard {
+		if _, ok := cardExist[cardId]; ok {
+			continue
+		}
+		if !player.ModCard.IsHasCard(cardId) {
+			continue
+		}
+		newList = append(newList, cardId)
+		cardExist[cardId] = 1
+	}
+	m.ShowCard = newList
+	fmt.Println("新的卡池:", m.ShowCard)
+}
+
+func (m *ModPlayer) SetShowTeam(showRole []int, player *Player) {
+	if len(showRole) > csvs.SHOW_SIZE {
+		return
+	}
+	roleExist := make(map[int]int)
+	newList := make([]*ShowRole, 0)
+	for _, roleId := range showRole {
+		if _, ok := roleExist[roleId]; ok {
+			continue
+		}
+		if !player.ModRole.IsHasRole(roleId) {
+			continue
+		}
+		newList = append(newList, &ShowRole{
+			RoleId:    roleId,
+			RoleLevel: player.ModRole.GetRoleLevel(roleId),
+		})
+		fmt.Println("新的ROLEID:", roleId)
+
+		roleExist[roleId] = 1
+	}
+	m.ShowTeam = newList
+	fmt.Println("新的队伍:", m.ShowTeam)
+}
+
+func (p *ModPlayer) SetHideShowTeam(isHide int) {
+	if isHide != csvs.LOGIC_FALSE && isHide != csvs.LOGIC_TRUE {
+		return
+	}
+	p.HideShowTeam = isHide
 }
