@@ -38,6 +38,16 @@ func (p *Player) RecvSetSign(sign string) {
 	fmt.Println("当前签名:", p.ModPlayer.Sign)
 }
 
+func (p *Player) ReduceWorldLevel(sign string) {
+	p.ModPlayer.ReduceWorldLevel()
+	fmt.Println("当前签名:", p.ModPlayer.Sign)
+}
+
+func (p *Player) ReturnWorldLevel(sign string) {
+	p.ModPlayer.ReturnWorldLevel()
+	fmt.Println("当前签名:", p.ModPlayer.Sign)
+}
+
 func NewTestPlayer() *Player {
 	player := &Player{}
 	player.ModPlayer = &ModPlayer{}
@@ -48,5 +58,7 @@ func NewTestPlayer() *Player {
 	player.ModUniqueTask.Locker = &sync.RWMutex{}
 
 	player.ModPlayer.PlayerLevel = 1
+	player.ModPlayer.WorldLevel = 5
+	player.ModPlayer.WorldLevelNow = 4
 	return player
 }
