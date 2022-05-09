@@ -47,12 +47,15 @@ func main() {
 
 func playerSet(player *game.Player) {
 	s1 := time.Now().Nanosecond()
+	fmt.Println("s1", s1)
 	for i := 0; i < 1000000; i++ {
 		player.ModUniqueTask.Locker.Lock()
 		player.ModUniqueTask.MyTaskInfo[10001] = &game.TaskInfo{}
 		player.ModUniqueTask.Locker.Unlock()
 	}
-	e1 := time.Now().Nanosecond() - s1
+	e1 := time.Now().Nanosecond()
+	fmt.Println("e1", e1)
+	e1 -= s1
 	fmt.Println("lock time", e1/1000000)
 
 	s3 := time.Now().Nanosecond()
