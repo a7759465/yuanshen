@@ -36,10 +36,12 @@ type ModPlayer struct {
 func (m *ModPlayer) SetIcon(iconId int, player *Player) {
 	if !player.ModIcon.IsHasIcon(iconId) {
 		//通知客户端非法
+		fmt.Println("没有头像")
 		return
 	}
 	// player.ModPlayer.Icon = iconId
 	m.Icon = iconId
+	fmt.Println("当前头像:", m.Icon)
 }
 
 func (m *ModPlayer) SetCard(cardId int, player *Player) {

@@ -17,6 +17,7 @@ type Player struct {
 	ModCard       *ModCard
 	ModUniqueTask *ModUniqueTask
 	ModRole       *ModRole
+	ModBag        *ModBag
 }
 
 func (p *Player) RecvSetIcon(iconId int) {
@@ -71,13 +72,20 @@ func (p *Player) Run() {
 func NewTestPlayer() *Player {
 	player := &Player{}
 	player.ModPlayer = &ModPlayer{}
-	player.ModIcon = &ModIcon{}
-	player.ModCard = &ModCard{}
+	player.ModIcon = &ModIcon{
+		IconInfo: make(map[int]*Icon),
+	}
+	player.ModCard = &ModCard{
+		CardInfo: make(map[int]*Card),
+	}
 	player.ModUniqueTask = &ModUniqueTask{}
 	player.ModUniqueTask.MyTaskInfo = make(map[int]*TaskInfo)
 	// player.ModUniqueTask.Locker = &sync.RWMutex{}
 
 	player.ModRole = &ModRole{}
+	player.ModBag = &ModBag{
+		BagInfo: make(map[int]*ItemInfo),
+	}
 
 	player.ModPlayer.PlayerLevel = 1
 	player.ModPlayer.WorldLevel = 5
