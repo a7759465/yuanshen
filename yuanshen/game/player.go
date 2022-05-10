@@ -2,7 +2,7 @@ package game
 
 import (
 	"fmt"
-	"sync"
+	"time"
 )
 
 const (
@@ -16,6 +16,7 @@ type Player struct {
 	ModIcon       *ModIcon
 	ModCard       *ModCard
 	ModUniqueTask *ModUniqueTask
+	ModRole       *ModRole
 }
 
 func (p *Player) RecvSetIcon(iconId int) {
@@ -43,17 +44,28 @@ func (p *Player) ReduceWorldLevel(sign string) {
 	fmt.Println("当前签名:", p.ModPlayer.Sign)
 }
 
-func (p *Player) ReturnWorldLevel(sign string) {
-	p.ModPlayer.ReturnWorldLevel()
-	fmt.Println("当前签名:", p.ModPlayer.Sign)
-}
-
 func (p *Player) SetBirth(birth int) {
 	p.ModPlayer.SetBirth(birth)
 }
 
-func (p *Player) SetShowCard(showCard []int) {
-	p.ModPlayer.SetShowCard(showCard, p)
+func (p *Player) SetShowCard(card []int) {
+	p.ModPlayer.SetShowCard(card, p)
+}
+
+func (p *Player) SetShowTeam(showRole []int) {
+	p.ModPlayer.SetShowTeam(showRole, p)
+}
+
+func (p *Player) SetHideShowTeam(isHide int) {
+	p.ModPlayer.SetHideShowTeam(isHide)
+}
+
+func (p *Player) Run() {
+
+	ticker := time.NewTicker(time.Second * 1)
+	for range ticker.C {
+		fmt.Println("用户定时器：", time.Now().Unix())
+	}
 }
 
 func NewTestPlayer() *Player {
@@ -63,7 +75,9 @@ func NewTestPlayer() *Player {
 	player.ModCard = &ModCard{}
 	player.ModUniqueTask = &ModUniqueTask{}
 	player.ModUniqueTask.MyTaskInfo = make(map[int]*TaskInfo)
-	player.ModUniqueTask.Locker = &sync.RWMutex{}
+	// player.ModUniqueTask.Locker = &sync.RWMutex{}
+
+	player.ModRole = &ModRole{}
 
 	player.ModPlayer.PlayerLevel = 1
 	player.ModPlayer.WorldLevel = 5
